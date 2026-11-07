@@ -1,65 +1,81 @@
-const { PrismaClient } = require("@prisma/client")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { ValidationError, parseCredentials } = require("../lib/authValidation");
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 exports.register = async (req, res) => {
-
-  const { email, password } = req.body
+  let credentials;
 
   try {
+    credentials = parseCredentials(req.body);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    return res.status(400).json({ error: "Invalid request body." });
+  }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
+  try {
+    const hashedPassword = await bcrypt.hash(credentials.password, 10);
     const user = await prisma.user.create({
       data: {
-        email,
-        password: hashedPassword
-      }
-    })
+        email: credentials.email,
+        password: hashedPassword,
+      },
+    });
 
-    res.json({
-      id: user.id,
-      email: user.email
-    })
-
+    return res.status(201).json({ id: user.id, email: user.email });
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "User registration failed" })
-  }
-}
-
-exports.login = async (req, res) => {
-
-  const { email, password } = req.body
-
-  try {
-
-    const user = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    if (!user) {
-      return res.status(401).json({ message: "User not found" })
+    if (error && error.code === "P2002") {
+      return res.status(409).json({ error: "An account with this email already exists." });
     }
 
-    const valid = await bcrypt.compare(password, user.password)
+    console.error("User registration failed:", error.message);
+    return res.status(500).json({ error: "User registration failed." });
+  }
+};
+
+exports.login = async (req, res) => {
+  let credentials;
+
+  try {
+    credentials = parseCredentials(req.body);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    return res.status(400).json({ error: "Invalid request body." });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: credentials.email },
+    });
+
+    const valid = user
+      ? await bcrypt.compare(credentials.password, user.password)
+      : false;
 
     if (!valid) {
-      return res.status(401).json({ message: "Invalid password" })
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not configured.");
+      return res.status(503).json({ error: "Authentication is temporarily unavailable." });
     }
 
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
-    )
+    );
 
-    res.json({ token })
-
+    return res.status(200).json({ token });
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Login failed" })
+    console.error("Login failed:", error.message);
+    return res.status(500).json({ error: "Login failed." });
   }
-}
+};

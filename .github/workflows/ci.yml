@@ -1,0 +1,33 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Check application syntax
+        run: |
+          node --check server.js
+          node --check routes/authRoutes.js
+          node --check controllers/authcontroller.js
+          node --check lib/authValidation.js
+      - name: Run unit tests
+        run: npm test

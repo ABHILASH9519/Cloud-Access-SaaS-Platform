@@ -23,6 +23,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Generate Prisma client
+        run: npx prisma generate
       - name: Check application syntax
         run: |
           node --check server.js

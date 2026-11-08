@@ -4,9 +4,24 @@ require("dotenv").config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Set CORS_ORIGINS to a comma-separated allowlist in deployed environments.
+// Requests without an Origin header remain supported for server-to-server clients.
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+  })
+);
+app.use(express.json({ limit: "32kb" }));
 
 // Liveness probe for containers and deployment platforms.
 app.get("/healthz", (req, res) => {

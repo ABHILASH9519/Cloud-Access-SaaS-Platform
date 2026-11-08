@@ -16,7 +16,8 @@ A Node.js and Express API scaffold with email/password registration and login, b
 
 ## Current implementation
 
-- Express server with CORS and JSON request parsing.
+- Express server with configurable CORS and a 32 KB JSON request-body limit.
+- Set `CORS_ORIGINS` to a comma-separated list of allowed browser origins in deployed environments. When unset, the API allows any origin for development; requests without an Origin header remain supported.
 - `POST /api/auth/register` creates a user with a bcrypt-hashed password.
 - `POST /api/auth/login` verifies the password and returns a JWT with a seven-day expiry.
 - Prisma `User` model backed by PostgreSQL.
@@ -25,7 +26,7 @@ A Node.js and Express API scaffold with email/password registration and login, b
 
 ## Important scope note
 
-The checked-in code demonstrates authentication basics. Cloud-provider IAM provisioning, tenant isolation, access-policy management, billing flows, production deployment, and authorization middleware should not be considered implemented unless added and tested separately. Configure `JWT_SECRET` and database connectivity securely before running outside local development.
+The checked-in code demonstrates authentication basics. Cloud-provider IAM provisioning, tenant isolation, access-policy management, billing flows, production deployment, and authorization middleware should not be considered implemented unless added and tested separately. Configure `JWT_SECRET`, `CORS_ORIGINS`, and database connectivity securely before running outside local development.
 
 ## Run locally
 

@@ -2,7 +2,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 process.env.CORS_ORIGINS = "https://allowed.example";
-const app = require("../server");
+const createApp = require("../lib/createApp");
+const app = createApp();
 
 let server;
 let baseUrl;

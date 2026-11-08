@@ -20,11 +20,12 @@ A Node.js and Express API scaffold with email/password registration and login, b
 - `POST /api/auth/register` creates a user with a bcrypt-hashed password.
 - `POST /api/auth/login` verifies the password and returns a JWT with a seven-day expiry.
 - Prisma `User` model backed by PostgreSQL.
-- Runtime configuration reads environment variables via dotenv.
+- Credential validation normalizes email addresses, checks email syntax, requires at least eight password characters, and enforces bcrypt's 72-byte UTF-8 input limit.
+- Node's built-in test runner is configured with `npm test`; credential validation tests live in `test/`.
 
 ## Important scope note
 
-The checked-in code currently demonstrates authentication basics. Cloud-provider IAM provisioning, tenant isolation, access-policy management, billing flows, production deployment, and authorization middleware should not be considered implemented unless added and tested separately. Configure `JWT_SECRET` and database connectivity securely before running outside local development.
+The checked-in code demonstrates authentication basics. Cloud-provider IAM provisioning, tenant isolation, access-policy management, billing flows, production deployment, and authorization middleware should not be considered implemented unless added and tested separately. Configure `JWT_SECRET` and database connectivity securely before running outside local development.
 
 ## Run locally
 
@@ -32,6 +33,5 @@ The checked-in code currently demonstrates authentication basics. Cloud-provider
 2. Run `npm install`.
 3. Configure environment variables for PostgreSQL and `JWT_SECRET` according to the Prisma version in use.
 4. Generate the Prisma client and apply the required database migrations.
-5. Start the server with `node server.js`.
-
-> The repository currently defines a placeholder test script that exits with an error; automated tests are not yet configured.
+5. Run the test suite with `npm test`.
+6. Start the API with `npm start`.

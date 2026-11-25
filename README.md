@@ -1,5 +1,23 @@
 # Cloud Access SaaS Platform
 
+<!-- portfolio-visual-start -->
+## Engineering overview
+
+![Prisma](https://img.shields.io/badge/Stack-Prisma-176b99) ![Stars](https://img.shields.io/github/stars/ABHILASH9519/Cloud-Access-SaaS-Platform)
+
+![Animated workflow](docs/portfolio-flow.svg)
+
+```mermaid
+flowchart LR
+  N0["Credentials"] --> N1["Express"] --> N2["Authentication"] --> N3["PostgreSQL"]
+```
+
+Illustrative workflow: Credentials → Express → Authentication → PostgreSQL. See the implementation and setup below for actual capabilities and prerequisites.
+
+[Developer profile](https://github.com/ABHILASH9519) · [Issues](https://github.com/ABHILASH9519/Cloud-Access-SaaS-Platform/issues)
+<!-- portfolio-visual-end -->
+
+
 A Node.js and Express API scaffold with email/password registration and login, bcrypt password hashing, JWT issuance, and Prisma access to a PostgreSQL user model.
 
 ## Architecture

@@ -54,3 +54,23 @@ The checked-in code demonstrates authentication basics. Cloud-provider IAM provi
 4. Generate the Prisma client and apply the required database migrations.
 5. Run the test suite with `npm test`.
 6. Start the API with `npm start`.
+
+
+## Technical walkthrough
+
+```mermaid
+sequenceDiagram
+    participant P0 as Client
+    participant P1 as Express API
+    participant P2 as Auth service
+    participant P3 as Prisma database
+    P0->>P1: Express API
+    P1->>P2: Auth service
+    P2->>P3: Prisma database
+```
+
+**Engineering review focus:** Password hashing and JWT authentication; not full multi-tenant IAM.
+
+This diagram is illustrative, not a recorded execution trace. Refer to the existing run instructions for verification.
+
+![Last commit](https://img.shields.io/github/last-commit/ABHILASH9519/Cloud-Access-SaaS-Platform) ![Open issues](https://img.shields.io/github/issues/ABHILASH9519/Cloud-Access-SaaS-Platform)
